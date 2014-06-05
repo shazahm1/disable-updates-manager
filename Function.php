@@ -1,7 +1,8 @@
 <?php
 /**
  * @package Disable Updates Manager
- * @author  Websiteguy
+ * @author Websiteguy
+ * @email webguywp@gmail.com
  * @version 4.1.0
  */
 /*
@@ -10,13 +11,14 @@ Plugin URI: http://wordpress.org/plugins/stops-core-theme-and-plugin-updates/
 Version: 4.1.0
 Description: A configurable plugin that disables updates for you. Easy, clean and helpful.
 Author: Websiteguy
-Author URI: http://profiles.wordpress.org/kidsguide/
+Author URI: http://www.webguywp.wordpress.com
+Author Email: webguywp@gmail.com
 License: GPL2
 Text Domain: disable-updates-manager
 Domain Path: lang
 Tested up to WordPress: 3.9.1
 
-@Copyright 2013 - 2014 Websiteguy (email: mpsparrow@cogeco.ca)
+@Copyright 2013 - 2014 Websiteguy (email: webguywp@gmail.com)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License, version 2, as
