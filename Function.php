@@ -199,7 +199,6 @@ class Disable_Updates {
 					define( 'disable_updates_loaded', 1 );
 
 					add_action( 'init', array( __CLASS__, 'update_plugin_block_status' ) );
-					add_action( 'init', array( __CLASS__, 'plugin_action_links' ) );
 					add_filter( 'site_transient_update_plugins', array( __CLASS__, 'remove_plugin_update_notification' ) );
 					add_filter( 'plugin_action_links', array( __CLASS__, 'plugin_block_action_link' ), 10, 4 );
 
@@ -424,35 +423,6 @@ class Disable_Updates {
 
 		// This doesn't make sense. Purpose?
 		// apply_filters( 'automatic_theme_updates_send_debug_email', TRUE, $type, $theme_update, $result );
-	}
-
-	static function plugin_action_links() {
-
-		if ( ! current_user_can( 'update_plugins' ) ) {
-			return;
-		}
-
-		$plugins  = get_site_transient( 'update_plugins' );
-		// $to_block = get_option( 'disable_updates_blocked' );
-
-		if ( isset( $plugins->response ) ) {
-
-			// loop through all of the plugins with updates available and attach the appropriate filter
-			foreach ( $plugins->response as $filename => $plugin ) {
-
-				// check that the version is the version we want to block updates to
-				add_action( "in_plugin_update_message-$filename", array( __CLASS__, 'plugin_block_link' ), 99, 2 );
-			}
-		}
-
-		if ( isset( $plugins->disable_updates ) ) {
-
-			foreach ( $plugins->disable_updates as $filename => $plugin ) {
-
-				// check that the version is the version we want to block updates to
-				add_action( "after_plugin_row_$filename", array( __CLASS__, 'plugin_unblock_link'), -1, 1 );
-			}
-		}
 	}
 
 	static function plugin_block_action_link( $actions, $plugin_file, $plugin_data, $context ) {
