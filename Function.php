@@ -69,7 +69,22 @@ class Disable_Updates {
 
 	static function enqueue_css() {
 
-			wp_enqueue_style( 'disable-updates-manager-css', plugins_url( 'style.css', __FILE__ ), array(), self::VERSION );
+		// If SCRIPT_DEBUG is set and TRUE load the non-minified files, otherwise, load the minified files.
+		$min = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
+
+		wp_register_style( 'dum-chosen', plugins_url( "vendor/chosen/chosen$min.css", __FILE__ ), array(), '1.1.0' );
+
+		wp_enqueue_style( 'disable-updates-manager', plugins_url( 'assets/style.css', __FILE__ ), array( 'dum-chosen' ), self::VERSION );
+	}
+
+	static function enqueue_js() {
+
+		// If SCRIPT_DEBUG is set and TRUE load the non-minified files, otherwise, load the minified files.
+		$min = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
+
+		wp_register_script( 'dum-admin-js', plugins_url( 'assets/admin.js', __FILE__ ), array(), self::VERSION );
+
+		wp_enqueue_script( 'dum-chosen-js', plugins_url( "vendor/chosen/chosen.jquery$min.js", __FILE__ ), array( 'dum-admin-js' ), '1.1.0' );
 	}
 
 	// Register settings.
@@ -80,6 +95,15 @@ class Disable_Updates {
 
 	static function validate_settings( $value ) {
 
+		// Since the blocked plugins are stored in a different option, we need to update that option.
+		$blocked_plugins = $value['plugins'];
+
+		// Convert the data to match the way the options are stored.
+		$blocked_plugins = array_fill_keys( $blocked_plugins, TRUE );
+
+		// Update the blocked plugins option.
+		update_option( 'disable_updates_blocked', $blocked_plugins );
+
 		return $value;
 	}
 
@@ -89,6 +113,9 @@ class Disable_Updates {
 
 		// Enqueue the admin CSS.
 		add_action( "load-$page_hook", array( __CLASS__, 'enqueue_css' ) );
+
+		// Enqueue the admin JS.
+		add_action( "load-$page_hook", array( __CLASS__, 'enqueue_js' ) );
 	}
 
 	static function action_links( $links ) {
@@ -619,6 +646,50 @@ class Disable_Updates {
 
 							</td>
 						</tr>
+
+						<?php
+
+							if ( isset( $status['ip'] ) ) {
+
+								?>
+
+								<tr>
+									<td class="dum-overflow-visible">
+
+								<?php
+
+								$plugins = get_plugins();
+								$blocked = get_option( 'disable_updates_blocked' );
+
+								if ( ! empty( $plugins ) ) {
+
+									echo '<select class="dum-enhanced-select" name="_disable_updates[plugins][] data-placeholder="' . __( 'Select plugins to disable updates...', 'disable-updates-manager' ) . '" multiple>';
+
+										echo '<option value=""></option>';
+
+										foreach ( $plugins as $slug => $plugin ) {
+
+											printf( '<option value="%1$s"%2$s>%3$s</option>',
+												esc_attr( $slug ),
+												array_key_exists( $slug, (array) $blocked ) ?  ' SELECTED' : '',
+												esc_attr( $plugin['Name'] )
+											);
+										}
+
+									echo '</select>';
+								}
+
+								?>
+
+									</td>
+								</tr>
+
+								<?php
+
+							}
+
+						?>
+
 					</tbody>
 				</table>
 				<br>
