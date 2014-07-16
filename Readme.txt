@@ -1,5 +1,5 @@
 === Disable Updates Manager ===
-Contributors: kidsguide
+Contributors: kidsguide, shazahm1@hotmail.com
 Tags: Disable All Updates, Disable Plugin Updates, Disable Theme Updates, Disable WordPress Core Updates, Disable Core Updates, Disable Updates Settings, Disable Updates, Disable All WordPress Updates, Disable All WordPress Updates Settings, Disable Updates Manager, Disable All Updates Manager, Disable Updates Manager Settings, Update Check
 Requires at least: 3.0
 Tested up to: 3.9.1
@@ -11,6 +11,8 @@ A configurable plugin that disables updates for you. Easy, clean and helpful.
 The best plugin to disable updates is here!
 
 This plugin is configurable! Check the updates you would like to disable in the settings page along with other helpful settings. The settings page is located under the settings section in your dashboard (changed in version 4.0). Check the features below or the <a href="http://wordpress.org/plugins/stops-core-theme-and-plugin-updates/screenshots/">screenshots</a> for more information.
+
+<a href="http://www.devwpp.wordpress.com">Check our blog for beta releases.</a>
 
 = Features =
 <ol>
@@ -66,6 +68,13 @@ Installing Disable Updates Manager.
 3.That's it. You're ready to go!
 
 == Changelog ==
+= 4.1.10 =
+* Uploaded version 4.1.10 on GitHub.
+* Fixed error code "Warning: call_user_func_array() expects parameter 1 to be a valid callback, class 'Disable_Updates' does not have a method 'plugin_unblock_link' in D:\wamp\www\myWpSite\wp-includes\plugin.php on line 470".
+* Updated website address to <a href="www.devwpp.wordpress.com">devwpp.wordpress.com</a>
+* Changed official name to devWPP in all files.
+* Changed some notes in the code.
+
 = 4.1.0 =
 * <strong>BIG:</strong> code clean-up (moved code, fixed code, etc.). - Thanks <a href="https://github.com/Websiteguy/disable-updates-manager/pull/4">GitHub Pull Request</a> and other help!!!
 * Added: version 4.1.0 on GitHub (including the lang file).

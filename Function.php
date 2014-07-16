@@ -1,24 +1,24 @@
 <?php
 /**
  * @package Disable Updates Manager
- * @author Websiteguy
+ * @author devWPP
  * @email webguywp@gmail.com
- * @version 4.1.0
+ * @version 4.1.10
  */
 /*
 Plugin Name: Disable Updates Manager
 Plugin URI: http://wordpress.org/plugins/stops-core-theme-and-plugin-updates/
-Version: 4.1.0
+Version: 4.1.10
 Description: A configurable plugin that disables updates for you. Easy, clean and helpful.
 Author: Websiteguy
-Author URI: http://www.webguywp.wordpress.com
+Author URI: http://www.devWPP.wordpress.com
 Author Email: webguywp@gmail.com
 License: GPL2
 Text Domain: disable-updates-manager
 Domain Path: lang
 Tested up to WordPress: 3.9.1
 
-@Copyright 2013 - 2014 Websiteguy (email: webguywp@gmail.com)
+@Copyright 2013 - 2014 devWPP (email: webguywp@gmail.com)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License, version 2, as
@@ -39,7 +39,7 @@ Go to the license.txt in the trunk for more information.
 class Disable_Updates {
 
 	// Define version.
-	const VERSION = '4.1.0';
+	const VERSION = '4.1.10';
 
 	function __construct() {
 
@@ -110,7 +110,6 @@ class Disable_Updates {
 
 			return array_merge(
 				$links,
-				array( '<a target="_BLANK" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=LC5UR6667DLXU">Donate</a>' ),
 				array( '<a href="http://www.wordpress.org/support/plugin/stops-core-theme-and-plugin-updates">Support</a>' ),
 				array( '<a href="http://www.wordpress.org/plugins/stops-core-theme-and-plugin-updates/faq/">FAQ</a>' ),
 				array( '<a href="https://www.youtube.com/watch?v=ppCxjREhF9g">Tutorial</a>' ),
