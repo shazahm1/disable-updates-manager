@@ -428,6 +428,9 @@ class Disable_Updates {
 
 		$blocked = get_option( 'disable_updates_blocked' );
 
+		// If there are no blocked plugins or the option does not exist, bail returning the $actions var.
+		if ( $blocked == FALSE ) return $actions;
+
 		if ( array_key_exists( $plugin_file, $blocked ) ) {
 
 			$actions[] = '<a class="delete" href="plugins.php?_wpnonce=' . wp_create_nonce( 'disable_updates' ) . '&disable_updates&unblock=' . $plugin_file . '">Unblock Updates</a>';
