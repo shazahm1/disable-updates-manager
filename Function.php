@@ -455,10 +455,7 @@ class Disable_Updates {
 
 		$blocked = get_option( 'disable_updates_blocked' );
 
-		// If there are no blocked plugins or the option does not exist, bail returning the $actions var.
-		if ( $blocked == FALSE ) return $actions;
-
-		if ( array_key_exists( $plugin_file, $blocked ) ) {
+		if ( $blocked !== FALSE && array_key_exists( $plugin_file, $blocked ) ) {
 
 			$actions[] = '<a class="delete" href="plugins.php?_wpnonce=' . wp_create_nonce( 'disable_updates' ) . '&disable_updates&unblock=' . $plugin_file . '">Unblock Updates</a>';
 
@@ -663,7 +660,7 @@ class Disable_Updates {
 
 								if ( ! empty( $plugins ) ) {
 
-									echo '<select class="dum-enhanced-select" name="_disable_updates[plugins][] data-placeholder="' . __( 'Select plugins to disable updates...', 'disable-updates-manager' ) . '" multiple>';
+									echo '<select class="dum-enhanced-select" name="_disable_updates[plugins][]" data-placeholder="' . __( 'Select plugins to disable...', 'disable-updates-manager' ) . '" multiple>';
 
 										echo '<option value=""></option>';
 
