@@ -653,39 +653,37 @@ class Disable_Updates {
 								<tr>
 									<td class="dum-overflow-visible">
 
-								<?php
+									<?php
 
-								$plugins = get_plugins();
-								$blocked = get_option( 'disable_updates_blocked' );
+									$plugins = get_plugins();
+									$blocked = get_option( 'disable_updates_blocked' );
 
-								if ( ! empty( $plugins ) ) {
+									if ( ! empty( $plugins ) ) {
 
-									echo '<select class="dum-enhanced-select" name="_disable_updates[plugins][]" data-placeholder="' . __( 'Select plugins to disable...', 'disable-updates-manager' ) . '" multiple>';
+										echo '<select class="dum-enhanced-select" name="_disable_updates[plugins][]" data-placeholder="' . __( 'Select plugins to disable...', 'disable-updates-manager' ) . '" multiple>';
 
-										echo '<option value=""></option>';
+											echo '<option value=""></option>';
 
-										foreach ( $plugins as $slug => $plugin ) {
+											foreach ( $plugins as $slug => $plugin ) {
 
-											printf( '<option value="%1$s"%2$s>%3$s</option>',
-												esc_attr( $slug ),
-												array_key_exists( $slug, (array) $blocked ) ?  ' SELECTED' : '',
-												esc_attr( $plugin['Name'] )
-											);
-										}
+												printf( '<option value="%1$s"%2$s>%3$s</option>',
+													esc_attr( $slug ),
+													array_key_exists( $slug, (array) $blocked ) ?  ' SELECTED' : '',
+													esc_attr( $plugin['Name'] )
+												);
+											}
 
-									echo '</select>';
-								}
+										echo '</select>';
+									}
 
-								?>
+									?>
 
 									</td>
 								</tr>
 
-								<?php
-
+							<?php
 							}
-
-						?>
+							?>
 
 					</tbody>
 				</table>
@@ -722,39 +720,36 @@ class Disable_Updates {
 							?>
 
 							<tr>
-								<th>Select themes to disable:</th>
-							</tr>
+									<td class="dum-overflow-visible">
 
-							<?php
+									<?php
 
-							$themes = wp_get_themes( array( 'allowed' => TRUE ) );
+									$themes = wp_get_themes( array( 'allowed' => TRUE ) );
 
-							foreach ( $themes as $slug => $theme ) {
+									if ( ! empty( $themes ) ) {
 
-								$key = sanitize_key( $slug );
+										echo '<select class="dum-enhanced-select" name="_disable_updates[themes][]" data-placeholder="' . __( 'Select themes to disable...', 'disable-updates-manager' ) . '" multiple>';
 
-								?>
+											echo '<option value=""></option>';
 
-								<tr>
-									<td>
+											foreach ( $themes as $slug => $theme ) {
 
-										<?php
+												printf( '<option value="%1$s"%2$s>%3$s</option>',
+													esc_attr( $slug ),
+													isset( $status['themes'] ) && in_array( $slug, $status['themes'] ) ?  ' SELECTED' : '',
+													esc_html( $theme->name )
+												);
+											}
 
-										printf( '<label for="%1$s"><input type="checkbox" value="%3$s" id="%1$s" name="_disable_updates[themes][%1$s]"%2$s> %4$s</label>',
-											$key,
-											( isset( $status['themes'][ $key ] ) && $status['themes'][ $key ] === $slug ) ? ' checked="checked"' : '',
-											$slug,
-											esc_html( $theme->name )
-										 );
+										echo '</select>';
+									}
 
-										?>
+									?>
 
 									</td>
-								</tr>
+							</tr>
 
-							<?php
-							}
-
+						<?php
 						}
 						?>
 
