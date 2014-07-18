@@ -15,7 +15,7 @@ Author URI: http://www.devWPP.wordpress.com
 Author Email: webguywp@gmail.com
 License: GPL2
 Text Domain: disable-updates-manager
-Domain Path: lang
+Domain Path: languages
 Tested up to WordPress: 3.9.1
 
 @Copyright 2013 - 2014 devWPP (email: webguywp@gmail.com)
