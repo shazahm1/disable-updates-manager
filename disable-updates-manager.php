@@ -812,22 +812,14 @@ CONTENT;
 					wp_nonce_field( 'meta-box-order', 'meta-box-order-nonce', FALSE );
 					wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', FALSE ); ?>
 
-					<div class="metabox-holder" id="dashboard-widgets">
+					<div class="postbox-container">
+						<?php do_meta_boxes( self::$page_hook, 'left', $status ); ?>
+					</div>
 
-						 <div id="post-body" class="metabox-holder columns-<?php echo 1 == get_current_screen()->get_columns() ? '1' : '2'; ?>">
-
-							<div class="postbox-container">
-								<?php do_meta_boxes( self::$page_hook, 'left', $status ); ?>
-							</div>
-
-							<div class="postbox-container">
-								<?php do_meta_boxes( self::$page_hook, 'right', $status );  ?>
-								<?php //do_meta_boxes( self::$page_hook, 'advanced', $status ); ?>
-							</div>
-
-						</div> <!-- #post-body -->
-
-					</div> <!-- #poststuff -->
+					<div class="postbox-container">
+						<?php do_meta_boxes( self::$page_hook, 'right', $status );  ?>
+						<?php //do_meta_boxes( self::$page_hook, 'advanced', $status ); ?>
+					</div>
 
 					<?php settings_fields( '_disable_updates' ); ?>
 
