@@ -34,10 +34,6 @@ a.viewdescription:hover {
     color: #FFF;
 }
 
-.widefat th, .widefat td.dum-overflow-visible {
-    overflow: visible;
-}
-
 select.dum-enhanced-select {
     width: 100%;
 }

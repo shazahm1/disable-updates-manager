@@ -41,6 +41,8 @@ class Disable_Updates {
 	// Define version.
 	const VERSION = '4.1.10';
 
+	private static $page_hook = '';
+
 	function __construct() {
 
 		// Load our textdomain
@@ -67,6 +69,21 @@ class Disable_Updates {
 		load_plugin_textdomain( 'disable-updates-manager', FALSE, basename( dirname( __FILE__ ) ) . '/lang' );
 	}
 
+	static function page_actions() {
+
+		do_action( 'add_meta_boxes_' . self::$page_hook, NULL );
+		do_action( 'add_meta_boxes', self::$page_hook, NULL );
+
+		// User can choose between 1 or 2 columns (default 2)
+		add_screen_option('layout_columns', array('max' => 2, 'default' => 2) );
+
+		add_meta_box( 'dum-global', __( 'Disable Updates Globally', 'disable-updates-manager' ), array( __CLASS__, 'metabox_global' ), self::$page_hook, 'left', 'core' );
+		add_meta_box( 'dum-other', __( 'Other', 'disable-updates-manager' ), array( __CLASS__, 'metabox_other' ), self::$page_hook, 'right', 'core' );
+
+		add_meta_box( 'dum-themes', __( 'Themes', 'disable-updates-manager' ), array( __CLASS__, 'metabox_themes' ), self::$page_hook, 'left', 'core' );
+		add_meta_box( 'dum-plugins', __( 'Plugins', 'disable-updates-manager' ), array( __CLASS__, 'metabox_plugins' ), self::$page_hook, 'right', 'core' );
+	}
+
 	static function enqueue_css() {
 
 		// If SCRIPT_DEBUG is set and TRUE load the non-minified files, otherwise, load the minified files.
@@ -82,9 +99,16 @@ class Disable_Updates {
 		// If SCRIPT_DEBUG is set and TRUE load the non-minified files, otherwise, load the minified files.
 		$min = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
 
-		wp_register_script( 'dum-admin-js', plugins_url( 'assets/admin.js', __FILE__ ), array(), self::VERSION );
+		wp_register_script( 'dum-admin-js', plugins_url( 'assets/admin.js', __FILE__ ), array( 'postbox' ), self::VERSION );
 
 		wp_enqueue_script( 'dum-chosen-js', plugins_url( "vendor/chosen/chosen.jquery$min.js", __FILE__ ), array( 'dum-admin-js' ), '1.1.0' );
+	}
+
+	static function footer_scripts() {
+
+		?>
+		<script> postboxes.add_postbox_toggles(pagenow);</script>
+		<?php
 	}
 
 	// Register settings.
@@ -109,13 +133,19 @@ class Disable_Updates {
 
 	static function add_submenu() {
 
-		$page_hook = add_submenu_page( 'options-general.php', 'Disable Updates Manager', __( 'Disable Updates Manager', 'disable-updates-manager' ), 'manage_options', 'disable-updates-manager', array( __CLASS__, 'display_page' ) );
+		$page_hook = add_submenu_page( 'options-general.php', 'Disable Updates', __( 'Disable Updates', 'disable-updates-manager' ), 'manage_options', 'disable-updates-manager', array( __CLASS__, 'display_page' ) );
 
-		// Enqueue the admin CSS.
+		// Enqueue the admin CSS for this page only..
 		add_action( "load-$page_hook", array( __CLASS__, 'enqueue_css' ) );
 
-		// Enqueue the admin JS.
+		// Enqueue the admin JS for this page only..
 		add_action( "load-$page_hook", array( __CLASS__, 'enqueue_js' ) );
+
+		// Add callbacks for this page only.
+		add_action( "load-$page_hook", array( __CLASS__, 'page_actions' ), 9 );
+		add_action( "admin_footer-$page_hook" , array( __CLASS__ , 'footer_scripts' ) );
+
+		self::$page_hook = $page_hook;
 	}
 
 	static function action_links( $links ) {
@@ -545,6 +575,188 @@ class Disable_Updates {
 		return $r;
 	}
 
+	static function metabox_global( $status ) {
+
+		?>
+
+		<div class="showonhover">
+			<p>
+				<label for="all_notify">
+					<input
+						type="checkbox" <?php checked( 1, ( isset( $status['all'] ) ? (int) $status['all'] : 0 ), TRUE ); ?>
+						value="1" id="all_notify"
+						name="_disable_updates[all]"> <?php _e( 'Disable All Updates', 'disable-updates-manager' ) ?>
+				</label>
+				<span>
+					<a href="#" class="viewdescription">?</a>
+					<span class="hovertext">Disables core, theme, and plugin updates.</span>
+				</span>
+			</p>
+		</div>
+
+		<ul style="padding-left: 12px;">
+			<li>
+				<label for="plugins_notify">
+					<input type="checkbox" <?php checked( 1, ( isset( $status['plugin'] ) && ! isset( $status['all'] ) ? (int) $status['plugin'] : 0 ), TRUE ); ?>
+						   value="1" id="plugins_notify"
+						   name="_disable_updates[plugin]"
+						   <?php disabled( 1, ( isset( $status['all'] ) ? (int) $status['all'] : 0 ) ) ?>> <?php _e( 'Disable All Plugin Updates', 'disable-updates-manager' ) ?>
+				</label>
+			</li>
+			<li>
+				<label for="themes_notify">
+					<input type="checkbox" <?php checked( 1, ( isset( $status['theme'] ) && ! isset( $status['all'] ) ? (int) $status['theme'] : 0 ), TRUE ); ?>
+						   value="1" id="themes_notify"
+						   name="_disable_updates[theme]"
+						   <?php disabled( 1, ( isset( $status['all'] ) ? (int) $status['all'] : 0 ) ) ?>> <?php _e( 'Disable All Theme Updates', 'disable-updates-manager' ) ?>
+				</label>
+			</li>
+			<li>
+				<label for="core_notify">
+					<input type="checkbox" <?php checked( 1, ( isset( $status['core'] ) && ! isset( $status['all'] ) ? (int) $status['core'] : 0 ), TRUE ); ?>
+						   value="1" id="core_notify"
+						   name="_disable_updates[core]"
+						   <?php disabled( 1, ( isset( $status['all'] ) ? (int) $status['all'] : 0 ) ) ?>> <?php _e( 'Disable WordPress Core Update', 'disable-updates-manager' ) ?>
+				</label>
+			</li>
+		</ul>
+
+		<?php
+	}
+
+	static function metabox_other( $status ) {
+
+		?>
+		<ul>
+			<li class="showonhover">
+				<label for="page_notify">
+					<input
+						type="checkbox" <?php checked( 1, ( isset( $status['page'] ) ? (int) $status['page'] : 0 ), TRUE ); ?>
+						value="1" id="page_notify"
+						name="_disable_updates[page]"> <?php _e( 'Remove Updates Page', 'disable-updates-manager' ) ?>
+				</label>
+				<span>
+					<a href="#" class="viewdescription">?</a>
+					<span class="hovertext">The page under the Dashboard tab.</span>
+				</span>
+			</li>
+
+			<li class="showonhover">
+				<label for="wpv_notify">
+					<input
+						type="checkbox" <?php checked( 1, ( isset( $status['wpv'] ) ? (int) $status['wpv'] : 0 ), TRUE ); ?>
+						value="1" id="wpv_notify"
+						name="_disable_updates[wpv]"> <?php _e( 'Remove WordPress Core Version from Footer', 'disable-updates-manager' ) ?>
+				</label>
+				<span>
+					<a href="#" class="viewdescription">?</a>
+					<span class="hovertext">Removes it for all users.</span>
+				</span>
+			</li>
+
+			<li>
+				<label for="abup_notify">
+					<input type="checkbox" <?php checked( 1, ( isset( $status['abup'] ) ? (int) $status['abup'] : 0 ), TRUE ); ?>
+						   value="1" id="abup_notify"
+						   name="_disable_updates[abup]"> <?php _e( 'Disable Automatic Background Updates', 'disable-updates-manager' ) ?>
+				</label>
+			</li>
+		<ul>
+
+		<?php
+	}
+
+	static function metabox_themes( $status ) {
+
+		?>
+
+		<div class="showonhover">
+			<p>
+				<label for="dum-disable-themes">
+					<input type="checkbox" <?php checked( 1, ( isset( $status['it'] ) && ! isset( $status['all'] ) ? (int) $status['it'] : 0 ), TRUE ); ?>
+						   id="dum-disable-themes"
+						   value="1"
+						   name="_disable_updates[it]"
+						   <?php disabled( 1, ( isset( $status['all'] ) ? (int) $status['all'] : 0 ) ) ?>> <?php _e( 'Disable Themes Individually', 'disable-updates-manager' ) ?>
+				</label>
+
+				<span>
+					<a href="#" class="viewdescription">?</a>
+					<span class="hovertext">Enabling this option will show the list of themes to block updates.</span>
+				</span>
+			</p>
+		</div>
+
+		<?php
+
+		$themes = wp_get_themes( array( 'allowed' => TRUE ) );
+
+		if ( ! empty( $themes ) ) {
+
+			echo '<select class="dum-enhanced-select" id="dum-disable-themes-select" name="_disable_updates[themes][]" data-placeholder="' . __( 'Select themes to disable...', 'disable-updates-manager' ) . '" multiple' . ( isset( $status['it'] ) && ! isset( $status['all'] ) ? '' : ' disabled' ) . '>';
+
+				echo '<option value=""></option>';
+
+				foreach ( $themes as $slug => $theme ) {
+
+					printf( '<option value="%1$s"%2$s>%3$s</option>',
+						esc_attr( $slug ),
+						! isset( $status['all'] ) && isset( $status['it'] ) && isset( $status['themes'] ) && in_array( $slug, $status['themes'] ) ?  ' SELECTED' : '',
+						esc_html( $theme->name )
+					);
+				}
+
+			echo '</select>';
+		}
+
+	}
+
+	static function metabox_plugins( $status ) {
+
+		?>
+
+		<div class="showonhover">
+			<p>
+				<label for="dum-disable-plugins">
+					<input type="checkbox" <?php checked( 1, ( isset( $status['ip'] ) && ! isset( $status['all'] ) ? (int) $status['ip'] : 0 ), TRUE ); ?>
+						   id="dum-disable-plugins"
+						   value="1"
+						   name="_disable_updates[ip]"
+						   <?php disabled( 1, ( isset( $status['all'] ) ? (int) $status['all'] : 0 ) ) ?>> <?php _e( 'Disable Plugins Individually', 'disable-updates-manager' ) ?>
+				</label>
+
+				<span>
+					<a href="#" class="viewdescription">?</a>
+					<span class="hovertext">Go to the "Plugins" section in your dashboard to disable.</span>
+				</span>
+			</p>
+		</div>
+
+		<?php
+
+		$plugins = get_plugins();
+		$blocked = get_option( 'disable_updates_blocked' );
+
+		if ( ! empty( $plugins ) ) {
+
+			echo '<select class="dum-enhanced-select" id="dum-disable-plugins-select" name="_disable_updates[plugins][]" data-placeholder="' . __( 'Select plugins to disable...', 'disable-updates-manager' ) . '" multiple' . ( isset( $status['ip'] ) && ! isset( $status['all'] ) ? '' : ' disabled' ) . '>';
+
+				echo '<option value=""></option>';
+
+				foreach ( $plugins as $slug => $plugin ) {
+
+					printf( '<option value="%1$s"%2$s>%3$s</option>',
+						esc_attr( $slug ),
+						! isset( $status['all'] ) && isset( $status['ip'] ) && array_key_exists( $slug, (array) $blocked ) ?  ' SELECTED' : '',
+						esc_attr( $plugin['Name'] )
+					);
+				}
+
+			echo '</select>';
+		}
+
+	}
+
 	// Settings page (under dashboard).
 	static function display_page() {
 
@@ -556,274 +768,53 @@ class Disable_Updates {
 		}
 		?>
 
-		<div class="wrap">
+		<h2><?php _e( 'Disable Updates', 'disable-updates-manager' ); ?></h2>
 
-		<h2><?php _e( 'Disable Updates Manager Settings', 'disable-updates-manager' ); ?></h2>
+		<div class="dashboard-widgets-wrap">
 
-			<div class="error" style="width: 780px;">
-				<p>
-					<strong>Please Note! - </strong>If either your WordPress core, theme, or plugins get too out
-					of date, you may run into compatibility problems.
-				</p>
+			<div class="error">
+				<p><strong>Please Note! - </strong>If either your WordPress core, theme, or plugins get too out
+					of date, you may run into compatibility problems.</p>
 			</div>
 
-			<form method="post" action="options.php">
+			<div id="dashboard-widgets" class="metabox-holder columns-<?php echo 1 == get_current_screen()->get_columns() ? '1' : '2'; ?>">
 
-				<?php settings_fields( '_disable_updates' ); ?>
+				<form name="dum-options" method="post" action="options.php">
+					<input type="hidden" name="action" value="dum-update-options">
+					<?php wp_nonce_field( 'dum-update-options-nonce' );
 
-				<table class="wp-list-table widefat fixed bookmarks" style="width: 590px; border-radius: 4px;">
-					<thead>
-						<tr>
-							<th>Disable Updates</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>
+					/* Used to save closed metaboxes and their order */
+					wp_nonce_field( 'meta-box-order', 'meta-box-order-nonce', FALSE );
+					wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', FALSE ); ?>
 
-								<div class="showonhover">
-									<label for="all_notify">
-										<input
-											type="checkbox" <?php checked( 1, ( isset( $status['all'] ) ? (int) $status['all'] : 0 ), TRUE ); ?>
-											value="1" id="all_notify"
-											name="_disable_updates[all]"> <?php _e( 'Disable All Updates', 'disable-updates-manager' ) ?>
-									</label>
-									<span>
-										<a href="#" class="viewdescription">?</a>
-										<span class="hovertext">Just disables core, theme, and plugin updates.</span>
-									</span>
-								</div>
+					<div class="metabox-holder" id="dashboard-widgets">
 
-								<span style="padding-left: 12px; display:block">
-									<label for="plugins_notify">
-										<input type="checkbox" <?php checked( 1, ( isset( $status['plugin'] ) ? (int) $status['plugin'] : 0 ), TRUE ); ?>
-											   value="1" id="plugins_notify"
-											   name="_disable_updates[plugin]"> <?php _e( 'Disable Plugin Updates', 'disable-updates-manager' ) ?>
-									</label>
-									<br>
-									<label for="themes_notify">
-										<input type="checkbox" <?php checked( 1, ( isset( $status['theme'] ) ? (int) $status['theme'] : 0 ), TRUE ); ?>
-											   value="1" id="themes_notify"
-											   name="_disable_updates[theme]"> <?php _e( 'Disable Theme Updates', 'disable-updates-manager' ) ?>
-									</label>
-									<br>
-									<label for="core_notify">
-										<input type="checkbox" <?php checked( 1, ( isset( $status['core'] ) ? (int) $status['core'] : 0 ), TRUE ); ?>
-											   value="1" id="core_notify"
-											   name="_disable_updates[core]"> <?php _e( 'Disable WordPress Core Update', 'disable-updates-manager' ) ?>
-									</label>
-								</span>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<br>
+						 <div id="post-body" class="metabox-holder columns-<?php echo 1 == get_current_screen()->get_columns() ? '1' : '2'; ?>">
 
-				<table class="wp-list-table widefat fixed bookmarks" style="width: 590px; border-radius: 4px;">
-					<thead>
-						<tr>
-							<th>Disable Plugins Individually</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>
-								<div class="showonhover">
-									<label for="ip_notify">
-										<input type="checkbox" <?php checked( 1, ( isset( $status['ip'] ) ? (int) $status['ip'] : 0 ), TRUE ); ?>
-											   value="1" id="ip_notify"
-											   name="_disable_updates[ip]"> <?php _e( 'Disable Plugins Individually', 'disable-updates-manager' ) ?>
-									</label>
+							<div class="postbox-container">
+								<?php do_meta_boxes( self::$page_hook, 'left', $status ); ?>
+							</div>
 
-									<span>
-										<a href="#" class="viewdescription">?</a>
-										<span class="hovertext">Go to the "Plugins" section in your dashboard to disable.</span>
-									</span>
-								</div>
+							<div class="postbox-container">
+								<?php do_meta_boxes( self::$page_hook, 'right', $status );  ?>
+								<?php //do_meta_boxes( self::$page_hook, 'advanced', $status ); ?>
+							</div>
 
-							</td>
-						</tr>
+						</div> <!-- #post-body -->
 
-						<?php
+					</div> <!-- #poststuff -->
 
-							if ( isset( $status['ip'] ) ) {
+					<?php settings_fields( '_disable_updates' ); ?>
 
-								?>
+					<p class="submit clear">
+						<input type="submit" class="button-primary" value="<?php _e( 'Update Settings' ) ?>"/>
+					</p>
 
-								<tr>
-									<td class="dum-overflow-visible">
+				</form>
 
-									<?php
+			</div><!-- #dashboard-widgets -->
 
-									$plugins = get_plugins();
-									$blocked = get_option( 'disable_updates_blocked' );
-
-									if ( ! empty( $plugins ) ) {
-
-										echo '<select class="dum-enhanced-select" name="_disable_updates[plugins][]" data-placeholder="' . __( 'Select plugins to disable...', 'disable-updates-manager' ) . '" multiple>';
-
-											echo '<option value=""></option>';
-
-											foreach ( $plugins as $slug => $plugin ) {
-
-												printf( '<option value="%1$s"%2$s>%3$s</option>',
-													esc_attr( $slug ),
-													array_key_exists( $slug, (array) $blocked ) ?  ' SELECTED' : '',
-													esc_attr( $plugin['Name'] )
-												);
-											}
-
-										echo '</select>';
-									}
-
-									?>
-
-									</td>
-								</tr>
-
-							<?php
-							}
-							?>
-
-					</tbody>
-				</table>
-				<br>
-
-				<table class="wp-list-table widefat fixed bookmarks" style="width: 590px; border-radius: 4px;">
-					<thead>
-						<tr>
-							<th>Disable Themes Individually</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>
-								<div class="showonhover">
-									<label for="it_notify">
-										<input type="checkbox" <?php checked( 1, ( isset( $status['it'] ) ? (int) $status['it'] : 0 ), TRUE ); ?>
-											   value="1" id="it_notify"
-											   name="_disable_updates[it]"> <?php _e( 'Disable Themes Individually', 'disable-updates-manager' ) ?>
-									</label>
-
-									<span>
-										<a href="#" class="viewdescription">?</a>
-										<span class="hovertext">Enabling this option will show the list of themes to block updates.</span>
-									</span>
-								</div>
-							</td>
-						</tr>
-
-						<?php
-
-						if ( isset( $status['it'] ) ) {
-
-							?>
-
-							<tr>
-									<td class="dum-overflow-visible">
-
-									<?php
-
-									$themes = wp_get_themes( array( 'allowed' => TRUE ) );
-
-									if ( ! empty( $themes ) ) {
-
-										echo '<select class="dum-enhanced-select" name="_disable_updates[themes][]" data-placeholder="' . __( 'Select themes to disable...', 'disable-updates-manager' ) . '" multiple>';
-
-											echo '<option value=""></option>';
-
-											foreach ( $themes as $slug => $theme ) {
-
-												printf( '<option value="%1$s"%2$s>%3$s</option>',
-													esc_attr( $slug ),
-													isset( $status['themes'] ) && in_array( $slug, $status['themes'] ) ?  ' SELECTED' : '',
-													esc_html( $theme->name )
-												);
-											}
-
-										echo '</select>';
-									}
-
-									?>
-
-									</td>
-							</tr>
-
-						<?php
-						}
-						?>
-
-					</tbody>
-				</table>
-				<br>
-
-				<table class="wp-list-table widefat fixed bookmarks" style="width: 590px; border-radius: 4px;">
-					<thead>
-						<tr>
-							<th>Other Settings</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>
-								<div class="showonhover">
-									<label for="page_notify">
-										<input
-											type="checkbox" <?php checked( 1, ( isset( $status['page'] ) ? (int) $status['page'] : 0 ), TRUE ); ?>
-											value="1" id="page_notify"
-											name="_disable_updates[page]"> <?php _e( 'Remove Updates Page', 'disable-updates-manager' ) ?>
-									</label>
-									<span>
-										<a href="#" class="viewdescription">?</a>
-										<span class="hovertext">The one in the dashboard tab.</span>
-									</span>
-								</div>
-
-								<div class="showonhover">
-									<label for="wpv_notify">
-										<input
-											type="checkbox" <?php checked( 1, ( isset( $status['wpv'] ) ? (int) $status['wpv'] : 0 ), TRUE ); ?>
-											value="1" id="wpv_notify"
-											name="_disable_updates[wpv]"> <?php _e( 'Remove WordPress Core Version from Footer', 'disable-updates-manager' ) ?>
-									</label>
-									<span>
-										<a href="#" class="viewdescription">?</a>
-										<span class="hovertext">Removes it for all users.</span>
-									</span>
-								</div>
-
-								<label for="abup_notify">
-									<input type="checkbox" <?php checked( 1, ( isset( $status['abup'] ) ? (int) $status['abup'] : 0 ), TRUE ); ?>
-										   value="1" id="abup_notify"
-										   name="_disable_updates[abup]"> <?php _e( 'Disable Automatic Background Updates', 'disable-updates-manager' ) ?>
-								</label>
-								<br>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<p class="submit">
-					<input type="submit" class="button-primary" value="<?php _e( 'Update Settings' ) ?>"/>
-				</p>
-
-				<table class="wp-list-table widefat fixed bookmarks"
-					   style="width: auto; padding: 5px; border-radius: 4px;">
-					<tbody>
-						<tr>
-							<td>
-								<p align="center">
-									<a href="http://wordpress.org/support/plugin/stops-core-theme-and-plugin-updates">Support</a> |
-									<a href="https://www.youtube.com/watch?v=ppCxjREhF9g">Tutorial</a> |
-									<a href="http://wordpress.org/plugins/stops-core-theme-and-plugin-updates/faq/">FAQ</a> |
-									<a href="https://github.com/Websiteguy/disable-updates-manager">GitHub</a>
-								</p>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-
-			</form>
-		</div>
+		</div><!-- .dashboard-widgets-wrap -->
 
 	<?php
 	}
