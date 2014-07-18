@@ -5,7 +5,7 @@
 	 */
 	if ( $.fn.chosen ) {
 
-		$('.dum-enhanced-select').chosen();
+		$('.dum-enhanced-select').chosen( { width: '100%' } );
 
 		$('#dum-disable-themes, #dum-disable-plugins').click( function() {
 
