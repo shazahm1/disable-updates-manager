@@ -1,0 +1,99 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Disable Updates Manager\n"
+"POT-Creation-Date: 2014-07-18 12:44-0500\n"
+"PO-Revision-Date: 2014-07-18 12:44-0500\n"
+"Last-Translator: Steven A. Zahm <helpdesk@connections-pro.com>\n"
+"Language-Team: Steven A. Zahm <helpdesk@connections-pro.com>\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.6.6\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: disable-updates-manager.php:80
+msgid "Disable Updates Globally"
+msgstr ""
+
+#: disable-updates-manager.php:81
+msgid "Other"
+msgstr ""
+
+#: disable-updates-manager.php:83
+msgid "Themes"
+msgstr ""
+
+#: disable-updates-manager.php:84
+msgid "Plugins"
+msgstr ""
+
+#: disable-updates-manager.php:136 disable-updates-manager.php:796
+msgid "Disable Updates"
+msgstr ""
+
+#: disable-updates-manager.php:156
+msgid "Configure"
+msgstr ""
+
+#: disable-updates-manager.php:596
+msgid "Resources"
+msgstr ""
+
+#: disable-updates-manager.php:613
+msgid "Disable All Updates"
+msgstr ""
+
+#: disable-updates-manager.php:628
+msgid "Disable All Plugin Updates"
+msgstr ""
+
+#: disable-updates-manager.php:636
+msgid "Disable All Theme Updates"
+msgstr ""
+
+#: disable-updates-manager.php:644
+msgid "Disable WordPress Core Update"
+msgstr ""
+
+#: disable-updates-manager.php:661
+msgid "Remove Updates Page"
+msgstr ""
+
+#: disable-updates-manager.php:674
+msgid "Remove WordPress Core Version from Footer"
+msgstr ""
+
+#: disable-updates-manager.php:686
+msgid "Disable Automatic Background Updates"
+msgstr ""
+
+#: disable-updates-manager.php:705
+msgid "Disable Themes Individually"
+msgstr ""
+
+#: disable-updates-manager.php:721
+msgid "Select themes to disable..."
+msgstr ""
+
+#: disable-updates-manager.php:750
+msgid "Disable Plugins Individually"
+msgstr ""
+
+#: disable-updates-manager.php:767
+msgid "Select plugins to disable..."
+msgstr ""
+
+#: disable-updates-manager.php:792
+msgid "You do not have permissions to access this page."
+msgstr ""
+
+#: disable-updates-manager.php:835
+msgid "Update Settings"
+msgstr ""
