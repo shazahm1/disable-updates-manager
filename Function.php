@@ -144,6 +144,7 @@ class Disable_Updates {
 		// Add callbacks for this page only.
 		add_action( "load-$page_hook", array( __CLASS__, 'page_actions' ), 9 );
 		add_action( "admin_footer-$page_hook" , array( __CLASS__ , 'footer_scripts' ) );
+		add_action( "load-$page_hook", array( __CLASS__, 'help_tab' ) );
 
 		self::$page_hook = $page_hook;
 	}
@@ -573,6 +574,30 @@ class Disable_Updates {
 		$r['body']['themes'] = json_encode( $themes );
 
 		return $r;
+	}
+
+	static function help_tab() {
+		global $test_help_page;
+
+		$screen  = get_current_screen();
+		$content = <<<CONTENT
+<p>
+	<a href="http://wordpress.org/support/plugin/stops-core-theme-and-plugin-updates">Support</a> |
+	<a href="https://www.youtube.com/watch?v=ppCxjREhF9g">Tutorial</a> |
+	<a href="http://wordpress.org/plugins/stops-core-theme-and-plugin-updates/faq/">FAQ</a> |
+	<a href="https://github.com/Websiteguy/disable-updates-manager">GitHub</a>
+</p>
+CONTENT;
+
+		// Add my_help_tab if current screen is My Admin Page
+		$screen->add_help_tab(
+			array(
+				'id'      => 'dum_help_tab',
+				'title'   => __( 'Resources', 'disable-updates-manager' ),
+				'content' => $content,
+			)
+		);
+
 	}
 
 	static function metabox_global( $status ) {
