@@ -91,7 +91,7 @@ class Disable_Updates {
 
 		wp_register_style( 'dum-chosen', plugins_url( "vendor/chosen/chosen$min.css", __FILE__ ), array(), '1.1.0' );
 
-		wp_enqueue_style( 'disable-updates-manager', plugins_url( 'assets/style.css', __FILE__ ), array( 'dum-chosen' ), self::VERSION );
+		wp_enqueue_style( 'disable-updates-manager', plugins_url( "assets/style$min.css", __FILE__ ), array( 'dum-chosen' ), self::VERSION );
 	}
 
 	static function enqueue_js() {
@@ -99,7 +99,7 @@ class Disable_Updates {
 		// If SCRIPT_DEBUG is set and TRUE load the non-minified files, otherwise, load the minified files.
 		$min = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
 
-		wp_register_script( 'dum-admin-js', plugins_url( 'assets/admin.js', __FILE__ ), array( 'postbox' ), self::VERSION );
+		wp_register_script( 'dum-admin-js', plugins_url( "assets/admin$min.js", __FILE__ ), array( 'postbox' ), self::VERSION );
 
 		wp_enqueue_script( 'dum-chosen-js', plugins_url( "vendor/chosen/chosen.jquery$min.js", __FILE__ ), array( 'dum-admin-js' ), '1.1.0' );
 	}
