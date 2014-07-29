@@ -119,14 +119,17 @@ class Disable_Updates {
 
 	static function validate_settings( $value ) {
 
-		// Since the blocked plugins are stored in a different option, we need to update that option.
-		$blocked_plugins = $value['plugins'];
+		if ( isset( $value['plugins'] ) ) {
 
-		// Convert the data to match the way the options are stored.
-		$blocked_plugins = array_fill_keys( $blocked_plugins, TRUE );
+			// Since the blocked plugins are stored in a different option, we need to update that option.
+			$blocked_plugins = $value['plugins'];
 
-		// Update the blocked plugins option.
-		update_option( 'disable_updates_blocked', $blocked_plugins );
+			// Convert the data to match the way the options are stored.
+			$blocked_plugins = array_fill_keys( $blocked_plugins, TRUE );
+
+			// Update the blocked plugins option.
+			update_option( 'disable_updates_blocked', $blocked_plugins );
+		}
 
 		return $value;
 	}
