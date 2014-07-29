@@ -127,9 +127,13 @@ class Disable_Updates {
 			// Convert the data to match the way the options are stored.
 			$blocked_plugins = array_fill_keys( $blocked_plugins, TRUE );
 
-			// Update the blocked plugins option.
-			update_option( 'disable_updates_blocked', $blocked_plugins );
+		} else {
+
+			$blocked_plugins = array();
 		}
+
+		// Update the blocked plugins option.
+		update_option( 'disable_updates_blocked', $blocked_plugins );
 
 		return $value;
 	}
